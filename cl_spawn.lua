@@ -48,6 +48,7 @@ function BR.Spawn:SpawnPlayer(ped)
 end
 
 function BR:ToggleSpectatorMode(force)
+	print(tostring(force))
 	if force then
 		self.Status = 2
 		for k,v in pairs(self.Players) do

@@ -13,6 +13,7 @@ local allPickups = {}
 local blips = {}
 local closestPickups = {}
 local InPlane = false
+local killed = false
 local topRightY = 0.07
 local killCount = 0
 local specPlayer = 0
@@ -49,6 +50,7 @@ function BR:ResetGame()
 	killCount = 0
 	currentCam = 1
 	specPlayer = 0
+	killed = false
 	InPlane = false
 	viewCam = nil
 
@@ -451,18 +453,20 @@ end
 
 function BR:EntityDamage(victimEntity, attackEntity, _, fatalBool, weaponUsed, _, _, _, _, _, entityType)
 	local ped = GetPlayerPed(-1)
-	if ped and ped == victimEntity and fatalBool and fatalBool ~= 0 then
+	if ped and ped == victimEntity and fatalBool and fatalBool ~= 0 and not killed then
 		local killer = IsPedAPlayer(attackEntity) and attackEntity or GetEntityType(attackEntity) == 2 and IsPedAPlayer(GetPedInVehicleSeat(attackEntity, -1)) and GetPedInVehicleSeat(attackEntity, -1)
 		killer = killer and NetworkGetPlayerIndexFromPed(killer)
-		print("KILLED BY " .. tostring(killer))
 		if BR.Status == 1 and BR.Players[PlayerId()] then
 			TriggerServerEvent("BR:SendToServer", 2, killer and GetPlayerServerId(killer) or false)
 		end
+
+		killed = true
+
 		Citizen.CreateThread(function()
 			Citizen.Wait(10000)
 			if not IsEntityDead(GetPlayerPed(-1)) then return end
 			self.Spawn:SpawnPed()
-			if not InPlane and BR.Status == 1 and tableCount(BR.Players, 2) then
+			if not InPlane and BR.Status == 0 and tableCount(BR.Players) >= 1 then
 				self:ToggleSpectatorMode(true)
 			end
 		end)

@@ -116,6 +116,8 @@ function BR:PlayerKilled(intSource, intKiller)
 		SQL_Query("UPDATE br_players SET br_players.kills = br_players.kills + 1 WHERE br_players.hex = @hex", { ["hex"] = GetPlayerIdentifiers(intKiller)[1] })
 	end
 
+	if true then return end
+
 	if tableCount(self.Players) <= 1 then
 		local winner = intSource
 		for k,_ in pairs(self.Players) do winner = k end
@@ -216,7 +218,7 @@ function BR:InternalTimer()
 			self:ResetGame()
 			TriggerClientEvent("BR:UpdateData", -1, { Status = 0, StartTime = 0 })
 		end
-
+		if true then return end
 		if not enoughPlayers or tableCount(self.Players) <= 1 and self.MinPlayers ~= 1 then
 			for k,v in pairs(BR.Players) do
 				local winner = k
@@ -327,5 +329,5 @@ RegisterCommand("topvictory", function(intSource)
 end)
 
 RegisterCommand("help", function(intSource)
-	ChatNotif(intSource, "Commands:\n/kill: shows your kill count\n/victory: shows your victory count\n/topkill: show the kill leaderboard\n/topvictory: show the victory leaderboard\n\n/skin: change to another skin.\n/saveskin: save your skin.")
+	ChatNotif(intSource, "Commands:\n/spectate: to spectate\n/kill: shows your kill count\n/victory: shows your victory count\n/topkill: show the kill leaderboard\n/topvictory: show the victory leaderboard\n\n/skin: change to another skin.\n/saveskin: save your skin.")
 end)
