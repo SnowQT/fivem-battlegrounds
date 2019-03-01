@@ -70,7 +70,7 @@ function BR.Spawn:SpawnPed()
 		NetworkResurrectLocalPlayer(GetEntityCoords(GetPlayerPed(-1)), 0.0)
 	end
 
-	local model = BR.Model
+	local model = BR.Model or GetRandomModel()
 	if model then
 		RequestAndWaitModel(model)
 		SetPlayerModel(PlayerId(), model)

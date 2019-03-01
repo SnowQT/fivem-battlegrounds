@@ -29,9 +29,9 @@ BR.ZoneRadius = 0.0
 BR.Map = false
 BR.Maps = {}
 
-BR.WarmUP = 30
+BR.WarmUP = 5
 BR.GameTime = 60 * 15
-BR.MinPlayers = 5
+BR.MinPlayers = 2
 
 
 function ChatNotif(a, b, c, color)
