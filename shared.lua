@@ -2,7 +2,7 @@ local IS_SERVER = IsDuplicityVersion()
 
 BR = BR or {}
 
-ENABLE_DEBUG = true
+ENABLE_DEBUG = false
 if not IS_SERVER then
 	BR.Blips = {}
 	BR.FormerZone = false
@@ -10,7 +10,7 @@ if not IS_SERVER then
 	BR.ShowBlips = true
 else
 	BR.StartZone = 120
-	BR.IntervalZone = 120
+	BR.IntervalZone = 90
 end
 
 --[[
@@ -30,8 +30,8 @@ BR.Map = false
 BR.Maps = {}
 
 BR.WarmUP = 30
-BR.GameTime = 60 * 18
-BR.MinPlayers = 2
+BR.GameTime = 60 * 15
+BR.MinPlayers = 5
 
 
 function ChatNotif(a, b, c, color)

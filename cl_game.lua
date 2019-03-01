@@ -260,6 +260,7 @@ function BR:PlaneTick(plane)
 		RenderScriptCams(0, 0, 0, 1, 0)
 		BR.Spawn:SpawnPlayer(ped)
 
+		ClearPedTasks(ped)
 		SetPedGadget(ped, GetHashKey("GADGET_PARACHUTE"), true)
 		GiveWeaponToPed(ped, GetHashKey("GADGET_PARACHUTE"), 1, false, true)
 	end
@@ -417,6 +418,7 @@ function BR:OnGameTick(ped)
 	HideHudComponentThisFrame(4)
 	HideHudComponentThisFrame(7)
 	HideHudComponentThisFrame(9)
+	RestorePlayerStamina(PlayerId(), 1.0)
 	-- HideHudComponentThisFrame(14)
 end
 
@@ -449,11 +451,13 @@ end
 
 function BR:EntityDamage(victimEntity, attackEntity, _, fatalBool, weaponUsed, _, _, _, _, _, entityType)
 	local ped = GetPlayerPed(-1)
-	print(fatalBool)
-	if ped and ped == victimEntity and fatalBool == 1 then
+	if ped and ped == victimEntity and fatalBool and fatalBool ~= 0 then
 		local killer = IsPedAPlayer(attackEntity) and attackEntity or GetEntityType(attackEntity) == 2 and IsPedAPlayer(GetPedInVehicleSeat(attackEntity, -1)) and GetPedInVehicleSeat(attackEntity, -1)
 		killer = killer and NetworkGetPlayerIndexFromPed(killer)
-		if BR.Status == 1 and BR.Players[PlayerId()] then TriggerServerEvent("BR:SendToServer", 2, killer and GetPlayerServerId(killer) or false) end
+		print("KILLED BY " .. tostring(killer))
+		if BR.Status == 1 and BR.Players[PlayerId()] then
+			TriggerServerEvent("BR:SendToServer", 2, killer and GetPlayerServerId(killer) or false)
+		end
 		Citizen.CreateThread(function()
 			Citizen.Wait(10000)
 			if not IsEntityDead(GetPlayerPed(-1)) then return end
@@ -578,6 +582,9 @@ AddEventHandler("BR:Event", function(eventID, _tbl)
 		SeatInPlane(plane)
 		CreatePlaneCam(plane)
 
+		NetworkSetFriendlyFireOption(true)
+    	SetCanAttackFriendly(PlayerPedId(), true, true)
+
 		DoScreenFadeIn(1000)
 	elseif eventID == 4 then
 		local victim, killer, killerName = _tbl.killed, _tbl.killer
@@ -585,8 +592,8 @@ AddEventHandler("BR:Event", function(eventID, _tbl)
 
 		BR.Players[victim] = nil
 
-		if killer then
-			killer = GetPlayerFromServerId(killer)
+		if victim then
+			killer = killer and GetPlayerFromServerId(killer)
 			if killer and GetPlayerName(killer) then
 				killerName = GetPlayerName(killer)
 				print("VICTIM -> " .. tostring(victim))

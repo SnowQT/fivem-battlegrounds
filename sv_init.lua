@@ -82,7 +82,7 @@ function BR:PlayerDropped(intSource)
 	self:PlayerKilled(intSource)
 	for k,v in pairs(BR.Players) do
 		if v == intSource or not GetPlayerName(v) then
-			table.remove(BR.Players, k)
+			BR.Players[k] = nil
 		end
 	end
 
@@ -106,7 +106,9 @@ function BR:UpdateSharedVar(_tbl)
 end
 
 function BR:PlayerKilled(intSource, intKiller)
+	print("KILL " .. intSource)
 	if not self.Players[intSource] then return end
+	print('SUITE KILL? ' .. tostring(intKiller))
 	self.Players[intSource] = nil
 	TriggerClientEvent("BR:Event", -1, 4, { killed = intSource, killer = intKiller })
 	if intKiller and self.Players[intKiller] then
@@ -309,7 +311,7 @@ RegisterCommand("victory", function(intSource)
 end)
 
 RegisterCommand("topkill", function(intSource)
-	local resultSQL, str = SQL_QueryResult("SELECT * FROM br_players ORDER BY kills DESC LIMIT 10"), ""
+	local resultSQL, str = SQL_QueryResult("SELECT * FROM br_players ORDER BY kills DESC LIMIT 5"), ""
 	for k,v in pairs(resultSQL) do
 		str = str .. v.name .. " - " .. v.kills .. " players killed" .. (k == #resultSQL and "" or "\n")
 	end
@@ -317,7 +319,7 @@ RegisterCommand("topkill", function(intSource)
 end)
 
 RegisterCommand("topvictory", function(intSource)
-	local resultSQL, str = SQL_QueryResult("SELECT * FROM br_players ORDER BY victory DESC LIMIT 10"), ""
+	local resultSQL, str = SQL_QueryResult("SELECT * FROM br_players ORDER BY victory DESC LIMIT 5"), ""
 	for k,v in pairs(resultSQL) do
 		str = str .. v.name .. " - " .. v.kills .. " victories" .. (k == #resultSQL and "" or "\n")
 	end
